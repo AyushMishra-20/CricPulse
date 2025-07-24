@@ -1,93 +1,92 @@
 // src/components/MatchCard.js
 import React from 'react';
-import { Paper, Box, Typography, Chip, Stack } from '@mui/material';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-
-const statusColor = (status) => {
-  if (status === 'Live') return 'error';
-  if (status === 'Completed') return 'default';
-  return 'warning';
-};
-
-const statusIcon = (status) => {
-  if (status === 'Live') return <FiberManualRecordIcon sx={{ fontSize: 12, mr: 0.5 }} />;
-  return null;
-};
+import { Paper, Box, Typography, Divider, Link } from '@mui/material';
 
 const MatchCard = ({ match }) => {
   const info = match.matchInfo;
-  const isLive = info.status === 'Live';
-  const matchType = info.matchType || 'T20'; // fallback if not present
+
+  // Uniform header string
+  const header = [
+    info.status?.toUpperCase() || '',
+    info.matchType || '',
+    info.venue || info.location || ''
+  ].filter(Boolean).join('  b7 ');
 
   return (
     <Paper
-      elevation={isLive ? 6 : 2}
+      elevation={3}
       sx={{
-        minWidth: 230,
-        maxWidth: 260,
-        px: 2,
-        py: 1.5,
-        borderRadius: 2,
+        width: 320,
+        height: 220,
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: isLive ? 6 : 2,
-        borderLeft: isLive ? '5px solid #d32f2f' : '5px solid transparent',
-        transition: 'transform 0.15s, box-shadow 0.15s',
-        '&:hover': {
-          transform: 'scale(1.04)',
-          boxShadow: 8,
-        },
-        position: 'relative',
-        bgcolor: isLive ? '#fff8f8' : 'background.paper',
+        borderRadius: 3,
+        bgcolor: '#fff',
+        boxShadow: 2,
+        border: '1px solid #e0e0e0',
+        m: 1,
+        p: 2,
       }}
     >
-      {/* Match type label */}
-      <Chip
-        label={matchType}
-        size="small"
-        sx={{ position: 'absolute', top: 8, left: 8, fontWeight: 700, bgcolor: '#e0e0e0', color: '#333' }}
-      />
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1, mt: 1 }}>
-        <img src={`https://flagcdn.com/24x18/${info.team1.flagCode}.png`} alt={info.team1.teamCode} style={{ borderRadius: 2 }} />
-        <Typography variant="subtitle1" fontWeight={900} sx={{ letterSpacing: 1 }}>
-          {info.team1.teamCode}
-        </Typography>
-        <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-          {info.team1Score}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5, fontWeight: 700 }}>
-          vs
-        </Typography>
-        <img src={`https://flagcdn.com/24x18/${info.team2.flagCode}.png`} alt={info.team2.teamCode} style={{ borderRadius: 2 }} />
-        <Typography variant="subtitle1" fontWeight={900} sx={{ letterSpacing: 1 }}>
-          {info.team2.teamCode}
-        </Typography>
-        <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-          {info.team2Score}
-        </Typography>
-      </Stack>
-      <Chip
-        icon={statusIcon(info.status)}
-        label={info.status}
-        color={statusColor(info.status)}
-        size="small"
-        sx={{ mb: 1, fontWeight: 700, letterSpacing: 1, bgcolor: isLive ? '#d32f2f' : undefined, color: isLive ? '#fff' : undefined }}
-      />
-      <Typography variant="caption" align="center" sx={{ mb: 1, minHeight: 32, fontWeight: 500 }}>
-        {info.result || 'Match details not available'}
+      {/* Header Row */}
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: '#444',
+          fontWeight: 700,
+          textAlign: 'center',
+          letterSpacing: 0.5,
+          mb: 1,
+          width: '100%',
+        }}
+      >
+        {header}
       </Typography>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="caption" color="primary" sx={{ cursor: 'pointer', fontWeight: 700 }}>
-          Fantasy
-        </Typography>
-        <Typography variant="caption" color="primary" sx={{ cursor: 'pointer', fontWeight: 700 }}>
-          Table
-        </Typography>
-        <Typography variant="caption" color="primary" sx={{ cursor: 'pointer', fontWeight: 700 }}>
-          Schedule
-        </Typography>
-      </Stack>
+      {/* Teams and Scores */}
+      <Box sx={{ width: '100%', mb: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#222' }}>{info.team1.teamCode}</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ color: '#222' }}>{info.team1Score}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#222' }}>{info.team2.teamCode}</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ color: '#222' }}>{info.team2Score}</Typography>
+        </Box>
+      </Box>
+      {/* Result/Session Note */}
+      <Typography
+        variant="body2"
+        sx={{
+          textAlign: 'center',
+          fontWeight: 500,
+          mb: 1,
+          width: '100%',
+        }}
+      >
+        {info.result && info.result !== info.status ? info.result : info.status}
+      </Typography>
+      <Divider sx={{ my: 1, width: '100%' }} />
+      {/* Links Row */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, width: '100%' }}>
+        {['Schedule', 'Table', 'Report', 'Videos', 'Series'].map((label) => (
+          <Link
+            key={label}
+            href="#"
+            underline="hover"
+            variant="body2"
+            color="primary"
+            sx={{
+              fontWeight: 500,
+              transition: 'color 0.2s',
+              '&:hover': { color: '#6c3fc5' },
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+      </Box>
     </Paper>
   );
 };
