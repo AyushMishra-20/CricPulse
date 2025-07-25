@@ -46,8 +46,8 @@ function MainApp() {
   const handleSearchChange = (e) => setSearch(e.target.value);
   const handleSearchKeyDown = (e) => { if (e.key === 'Enter') e.preventDefault(); };
 
-  // SVG logo for Flick of Wrists (new color scheme, new fonts)
-  const FlickLogo = () => (
+  // SVG logo for CricPulse (new color scheme, new fonts)
+  const CricPulseLogo = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
       <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -64,9 +64,9 @@ function MainApp() {
         <path d="M14 32 Q22 28 30 32" stroke="#FF9800" strokeWidth="2" fill="none"/>
       </svg>
       <Typography variant="h5" sx={{ fontWeight: 900, letterSpacing: 1, color: '#fff', ml: 1, fontFamily: 'Bangers, Montserrat, Roboto, Arial, sans-serif', textTransform: 'none', fontSize: { xs: 22, sm: 28 } }}>
-        Flick{' '}
+        Cric
         <Box component="span" sx={{ color: '#FF9800', fontWeight: 900, fontStyle: 'italic', fontFamily: 'Pacifico, cursive', fontSize: { xs: 22, sm: 28 } }}>
-          of Wrists
+          Pulse
         </Box>
       </Typography>
     </Box>
@@ -78,7 +78,7 @@ function MainApp() {
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
         <AppBar position="static" sx={{ boxShadow: 2, background: 'linear-gradient(90deg, #3a1c71 0%, #d76d77 100%)' }} component="nav" aria-label="Main navigation">
           <Toolbar sx={{ minHeight: 64 }}>
-            <FlickLogo />
+            <CricPulseLogo />
             <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
               <Button color="inherit" sx={{ fontWeight: 600 }}>Live Scores</Button>
               <Button color="inherit" sx={{ fontWeight: 600 }}>Schedule</Button>

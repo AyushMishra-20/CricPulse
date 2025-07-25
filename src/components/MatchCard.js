@@ -30,20 +30,6 @@ const MatchCard = ({ match }) => {
         p: 2,
       }}
     >
-      {/* Header Row */}
-      <Typography
-        variant="subtitle2"
-        sx={{
-          color: '#444',
-          fontWeight: 700,
-          textAlign: 'center',
-          letterSpacing: 0.5,
-          mb: 1,
-          width: '100%',
-        }}
-      >
-        {header}
-      </Typography>
       {/* Teams and Scores */}
       <Box sx={{ width: '100%', mb: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
