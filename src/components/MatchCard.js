@@ -5,12 +5,7 @@ import { Paper, Box, Typography, Divider, Link } from '@mui/material';
 const MatchCard = ({ match }) => {
   const info = match.matchInfo;
 
-  // Uniform header string
-  const header = [
-    info.status?.toUpperCase() || '',
-    info.matchType || '',
-    info.venue || info.location || ''
-  ].filter(Boolean).join('  b7 ');
+
 
   return (
     <Paper

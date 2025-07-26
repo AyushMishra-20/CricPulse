@@ -1,70 +1,134 @@
-# Getting Started with Create React App
+# CricPulse - Cricket Live Scores & News
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React application for live cricket scores, match updates, and cricket news built with Material-UI.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- 🏏 Live cricket scores and match updates
+- 📰 Latest cricket news feed
+- 🎨 Modern Material-UI design with dark/light mode
+- 📱 Responsive design for all devices
+- ⚡ Fast loading with fallback data
+- 🔍 Search functionality for matches and news
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 19.1.0
+- Material-UI v7.2.0
+- React Router for navigation
+- Axios for API calls
+- Framer Motion for animations
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (v16 or higher)
+- npm or yarn
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd CricPulse
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the development server:
+```bash
+npm start
+```
 
-### `npm run eject`
+The app will open at `http://localhost:3000`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Building for Production
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Deployment
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Vercel Deployment
 
-## Learn More
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Vercel will automatically detect it as a React app
+4. The `vercel.json` file is already configured for proper routing
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Manual Deployment
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Build the project:
+```bash
+npm run build
+```
 
-### Code Splitting
+2. Deploy the `build` folder to your hosting service
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Troubleshooting
 
-### Analyzing the Bundle Size
+### Blank Page Issues
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+If you see a blank page after deployment:
 
-### Making a Progressive Web App
+1. **Check Browser Console**: Open developer tools and look for JavaScript errors
+2. **API Issues**: The app uses fallback data if APIs fail, so it should still work
+3. **Routing Issues**: Make sure your hosting service supports client-side routing
+4. **Build Issues**: Ensure the build completed successfully
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Common Issues
 
-### Advanced Configuration
+1. **API Rate Limits**: The app uses RapidAPI for live data. If you hit rate limits, it will use fallback data
+2. **CORS Issues**: APIs are called from the client side, so CORS should be handled by the API providers
+3. **Material-UI Styling**: If styles don't load, check if all Material-UI dependencies are installed
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Project Structure
 
-### Deployment
+```
+src/
+├── components/          # React components
+│   ├── LiveScorecard.js
+│   ├── RecentMatches.js
+│   ├── NewsFeed.js
+│   ├── MatchCard.js
+│   └── ScoreSummary.js
+├── api/                # API integration
+│   └── cricket.js
+├── App.js              # Main app component
+├── index.js            # App entry point
+└── index.css           # Global styles
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## API Configuration
 
-### `npm run build` fails to minify
+The app uses RapidAPI for live cricket data. If you want to use your own API keys:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Sign up at [RapidAPI](https://rapidapi.com)
+2. Subscribe to cricket APIs
+3. Update the API keys in the component files
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+If you encounter any issues:
+
+1. Check the browser console for errors
+2. Verify all dependencies are installed
+3. Ensure you're using a compatible Node.js version
+4. Check the deployment logs in Vercel dashboard
