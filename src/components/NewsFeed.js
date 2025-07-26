@@ -1,10 +1,10 @@
 // src/components/NewsFeed.js
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Box, Stack, Link, CircularProgress, Alert } from '@mui/material';
-import axios from 'axios';
+// import axios from 'axios';
 
-const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
-const API_HOST = 'livescore6.p.rapidapi.com';
+// const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
+// const API_HOST = 'livescore6.p.rapidapi.com';
 
 const NewsFeed = ({ search, onNewsClick }) => {
   const [news, setNews] = useState([]);
@@ -15,7 +15,7 @@ const NewsFeed = ({ search, onNewsClick }) => {
     setLoading(true);
     setError(null);
     
-    // Fallback news data
+    // Enhanced fallback news data
     const fallbackNews = [
       {
         id: 1,
@@ -44,9 +44,30 @@ const NewsFeed = ({ search, onNewsClick }) => {
         time: '8 hours ago',
         img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
         link: '#'
+      },
+      {
+        id: 5,
+        title: 'Virat Kohli breaks another batting record',
+        time: '10 hours ago',
+        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
+        link: '#'
+      },
+      {
+        id: 6,
+        title: 'Australia vs West Indies: Series preview',
+        time: '12 hours ago',
+        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
+        link: '#'
       }
     ];
 
+    // For now, use fallback data since APIs are unreliable
+    // You can uncomment the API call below if you get valid API keys
+    console.log('Using fallback data for news');
+    setNews(fallbackNews);
+    setLoading(false);
+    
+    /* Uncomment this section when you have valid API keys
     axios.get('https://livescore6.p.rapidapi.com/news/list', {
       params: { category: 'cricket' },
       headers: {
@@ -56,6 +77,7 @@ const NewsFeed = ({ search, onNewsClick }) => {
       timeout: 5000
     })
     .then(res => {
+      console.log('News API response:', res.data);
       let newsList = res.data.articles || res.data.news || [];
       if (!newsList.length && res.data.news) {
         newsList = res.data.news;
@@ -68,7 +90,6 @@ const NewsFeed = ({ search, onNewsClick }) => {
         link: item.url || '#'
       }));
       
-      // Use API data if available, otherwise use fallback
       setNews(mappedNews.length > 0 ? mappedNews : fallbackNews);
       setLoading(false);
     })
@@ -77,6 +98,7 @@ const NewsFeed = ({ search, onNewsClick }) => {
       setNews(fallbackNews);
       setLoading(false);
     });
+    */
   }, []);
 
   let filteredNews = news;

@@ -1,11 +1,11 @@
 // src/components/RecentMatches.js
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
-import axios from 'axios';
+// import axios from 'axios';
 import MatchCard from './MatchCard';
 
-const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
-const API_HOST = 'cricbuzz-cricket.p.rapidapi.com';
+// const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
+// const API_HOST = 'cricbuzz-cricket.p.rapidapi.com';
 
 function RecentMatches({ search, onMatchClick }) {
   const [matches, setMatches] = useState([]);
@@ -17,7 +17,7 @@ function RecentMatches({ search, onMatchClick }) {
     setLoading(true);
     setError(null);
     
-    // Fallback data in case API fails
+    // Enhanced fallback data with more realistic matches
     const fallbackMatches = [
       {
         matchInfo: {
@@ -60,18 +60,53 @@ function RecentMatches({ search, onMatchClick }) {
           venue: 'Karachi',
           overs: '18.2'
         }
+      },
+      {
+        matchInfo: {
+          matchId: '4',
+          team1: { teamCode: 'WI', flagCode: 'wi' },
+          team2: { teamCode: 'AUS', flagCode: 'aus' },
+          team1Score: '214/4 (19.6)',
+          team2Score: '215/4 (16.1)',
+          status: 'Completed',
+          result: 'Australia won by 6 wkts',
+          matchType: 'T20I',
+          venue: 'Bridgetown',
+          overs: '16.1'
+        }
+      },
+      {
+        matchInfo: {
+          matchId: '5',
+          team1: { teamCode: 'BAN', flagCode: 'ban' },
+          team2: { teamCode: 'SL', flagCode: 'sl' },
+          team1Score: '189/8 (19.6)',
+          team2Score: '190/7 (18.5)',
+          status: 'Completed',
+          result: 'Sri Lanka won by 3 wkts',
+          matchType: 'T20I',
+          venue: 'Dhaka',
+          overs: '18.5'
+        }
       }
     ];
 
-    // Try to fetch from API, but fallback to static data if it fails
+    // For now, use fallback data since APIs are unreliable
+    // You can uncomment the API call below if you get valid API keys
+    console.log('Using fallback data for matches');
+    setMatches(fallbackMatches);
+    setLoading(false);
+    
+    /* Uncomment this section when you have valid API keys
     axios.get('https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent', {
       headers: {
         'X-RapidAPI-Key': API_KEY,
         'X-RapidAPI-Host': API_HOST
       },
-      timeout: 5000 // 5 second timeout
+      timeout: 5000
     })
     .then(res => {
+      console.log('API response:', res.data);
       const matches = [];
       (res.data.typeMatches || []).forEach(typeMatch => {
         (typeMatch.seriesMatches || []).forEach(series => {
@@ -98,7 +133,7 @@ function RecentMatches({ search, onMatchClick }) {
                   result: match.matchInfo.status,
                   matchType: match.matchInfo.matchFormat,
                   venue: match.matchInfo.venueInfo?.ground,
-                  overs: match.matchScore?.team1Score?.inngs1?.overs || match.matchScore?.team2Score?.inngs1?.overs || '',
+                  overs: match.matchScore?.team1Score?.inngs1?.overs || match.matchScore.team2Score?.inngs1?.overs || '',
                 }
               });
             });
@@ -106,7 +141,6 @@ function RecentMatches({ search, onMatchClick }) {
         });
       });
       
-      // Use API data if available, otherwise use fallback
       setMatches(matches.length > 0 ? matches : fallbackMatches);
       setLoading(false);
     })
@@ -115,6 +149,7 @@ function RecentMatches({ search, onMatchClick }) {
       setMatches(fallbackMatches);
       setLoading(false);
     });
+    */
   }, []);
 
   let filteredMatches = matches;
