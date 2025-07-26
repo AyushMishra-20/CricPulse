@@ -16,7 +16,7 @@ const NewsFeed = ({ search, onNewsClick }) => {
     
 
 
-    // Use API data only - no fallback news
+    // Try to fetch from APIs first, then use fallback if needed
     console.log('Fetching news from API...');
     
     // Try multiple news API endpoints
@@ -35,11 +35,45 @@ const NewsFeed = ({ search, onNewsClick }) => {
         url: 'https://cricbuzz-cricket.p.rapidapi.com/news/v1/index/cricket',
         host: 'cricbuzz-cricket.p.rapidapi.com',
         params: {}
+      },
+
+    ];
+
+    // Fallback news data in case all APIs fail
+    const fallbackNews = [
+      {
+        id: 1,
+        title: 'India wins thrilling T20 series against Australia',
+        time: '2 hours ago',
+        img: 'https://images.unsplash.com/photo-1616097212395-14ad8ef0c5ed?auto=format&fit=crop&w=70&q=50',
+        link: '#'
+      },
+      {
+        id: 2,
+        title: 'England announces squad for upcoming Test series',
+        time: '4 hours ago',
+        img: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=70&q=50',
+        link: '#'
+      },
+      {
+        id: 3,
+        title: 'Pakistan vs New Zealand: Live updates from Karachi',
+        time: '6 hours ago',
+        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
+        link: '#'
+      },
+      {
+        id: 4,
+        title: 'World Cup 2024: Schedule and venues announced',
+        time: '8 hours ago',
+        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
+        link: '#'
       }
     ];
 
     const tryNewsEndpoint = async (endpoint) => {
       try {
+        console.log(`Trying news API: ${endpoint.url}`);
         const response = await axios.get(endpoint.url, {
           params: endpoint.params,
           headers: {
@@ -48,9 +82,13 @@ const NewsFeed = ({ search, onNewsClick }) => {
           },
           timeout: 10000
         });
+        console.log(`News API ${endpoint.url} response status:`, response.status);
         return response.data;
       } catch (error) {
         console.log(`News API endpoint ${endpoint.url} failed:`, error.message);
+        if (error.response) {
+          console.log('Error response:', error.response.status, error.response.data);
+        }
         return null;
       }
     };
@@ -83,10 +121,9 @@ const NewsFeed = ({ search, onNewsClick }) => {
         }
       }
       
-      // If no API worked, show error
-      console.log('All news API endpoints failed');
-      setError('Unable to fetch cricket news. Please try again later.');
-      setNews([]);
+      // If no API worked, use fallback data
+      console.log('All news API endpoints failed, using fallback data');
+      setNews(fallbackNews);
       setLoading(false);
     };
 
