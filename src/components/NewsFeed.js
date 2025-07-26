@@ -1,10 +1,9 @@
 // src/components/NewsFeed.js
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Box, Stack, Link, CircularProgress, Alert } from '@mui/material';
-// import axios from 'axios';
+import axios from 'axios';
 
-// const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
-// const API_HOST = 'livescore6.p.rapidapi.com';
+const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
 
 const NewsFeed = ({ search, onNewsClick }) => {
   const [news, setNews] = useState([]);
@@ -15,90 +14,83 @@ const NewsFeed = ({ search, onNewsClick }) => {
     setLoading(true);
     setError(null);
     
-    // Enhanced fallback news data
-    const fallbackNews = [
+
+
+    // Use API data only - no fallback news
+    console.log('Fetching news from API...');
+    
+    // Try multiple news API endpoints
+    const newsEndpoints = [
       {
-        id: 1,
-        title: 'India wins thrilling T20 series against Australia',
-        time: '2 hours ago',
-        img: 'https://images.unsplash.com/photo-1616097212395-14ad8ef0c5ed?auto=format&fit=crop&w=70&q=50',
-        link: '#'
+        url: 'https://livescore6.p.rapidapi.com/news/list',
+        host: 'livescore6.p.rapidapi.com',
+        params: { category: 'cricket' }
       },
       {
-        id: 2,
-        title: 'England announces squad for upcoming Test series',
-        time: '4 hours ago',
-        img: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=70&q=50',
-        link: '#'
+        url: 'https://cricket-live-data.p.rapidapi.com/news',
+        host: 'cricket-live-data.p.rapidapi.com',
+        params: {}
       },
       {
-        id: 3,
-        title: 'Pakistan vs New Zealand: Live updates from Karachi',
-        time: '6 hours ago',
-        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
-        link: '#'
-      },
-      {
-        id: 4,
-        title: 'World Cup 2024: Schedule and venues announced',
-        time: '8 hours ago',
-        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
-        link: '#'
-      },
-      {
-        id: 5,
-        title: 'Virat Kohli breaks another batting record',
-        time: '10 hours ago',
-        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
-        link: '#'
-      },
-      {
-        id: 6,
-        title: 'Australia vs West Indies: Series preview',
-        time: '12 hours ago',
-        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=70&q=50',
-        link: '#'
+        url: 'https://cricbuzz-cricket.p.rapidapi.com/news/v1/index/cricket',
+        host: 'cricbuzz-cricket.p.rapidapi.com',
+        params: {}
       }
     ];
 
-    // For now, use fallback data since APIs are unreliable
-    // You can uncomment the API call below if you get valid API keys
-    console.log('Using fallback data for news');
-    setNews(fallbackNews);
-    setLoading(false);
-    
-    /* Uncomment this section when you have valid API keys
-    axios.get('https://livescore6.p.rapidapi.com/news/list', {
-      params: { category: 'cricket' },
-      headers: {
-        'X-RapidAPI-Key': API_KEY,
-        'X-RapidAPI-Host': API_HOST
-      },
-      timeout: 5000
-    })
-    .then(res => {
-      console.log('News API response:', res.data);
-      let newsList = res.data.articles || res.data.news || [];
-      if (!newsList.length && res.data.news) {
-        newsList = res.data.news;
+    const tryNewsEndpoint = async (endpoint) => {
+      try {
+        const response = await axios.get(endpoint.url, {
+          params: endpoint.params,
+          headers: {
+            'X-RapidAPI-Key': API_KEY,
+            'X-RapidAPI-Host': endpoint.host
+          },
+          timeout: 10000
+        });
+        return response.data;
+      } catch (error) {
+        console.log(`News API endpoint ${endpoint.url} failed:`, error.message);
+        return null;
       }
-      const mappedNews = newsList.map((item, idx) => ({
-        id: item.id || idx,
-        title: item.title || item.headline || 'Untitled',
-        time: item.date || item.time || '',
-        img: item.image || item.img || 'https://via.placeholder.com/70x70?text=News',
-        link: item.url || '#'
-      }));
+    };
+
+    const fetchNewsData = async () => {
+      for (const endpoint of newsEndpoints) {
+        const data = await tryNewsEndpoint(endpoint);
+        if (data) {
+          console.log('Successfully fetched news from:', endpoint.url);
+          console.log('News API response:', data);
+          
+          let newsList = data.articles || data.news || data.data || [];
+          if (!newsList.length && data.news) {
+            newsList = data.news;
+          }
+          
+          const mappedNews = newsList.map((item, idx) => ({
+            id: item.id || idx,
+            title: item.title || item.headline || item.name || 'Untitled',
+            time: item.date || item.time || item.publishedAt || '',
+            img: item.image || item.img || item.urlToImage || 'https://via.placeholder.com/70x70?text=News',
+            link: item.url || item.link || '#'
+          }));
+          
+          if (mappedNews.length > 0) {
+            setNews(mappedNews);
+            setLoading(false);
+            return;
+          }
+        }
+      }
       
-      setNews(mappedNews.length > 0 ? mappedNews : fallbackNews);
+      // If no API worked, show error
+      console.log('All news API endpoints failed');
+      setError('Unable to fetch cricket news. Please try again later.');
+      setNews([]);
       setLoading(false);
-    })
-    .catch(err => {
-      console.log('News API failed, using fallback data:', err.message);
-      setNews(fallbackNews);
-      setLoading(false);
-    });
-    */
+    };
+
+    fetchNewsData();
   }, []);
 
   let filteredNews = news;

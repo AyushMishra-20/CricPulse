@@ -1,11 +1,10 @@
 // src/components/RecentMatches.js
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
-// import axios from 'axios';
+import axios from 'axios';
 import MatchCard from './MatchCard';
 
-// const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
-// const API_HOST = 'cricbuzz-cricket.p.rapidapi.com';
+const API_KEY = '47e7b79ef2msh2fe5a7a5a313d87p12174ejsn141d3d6ce008';
 
 function RecentMatches({ search, onMatchClick }) {
   const [matches, setMatches] = useState([]);
@@ -17,139 +16,128 @@ function RecentMatches({ search, onMatchClick }) {
     setLoading(true);
     setError(null);
     
-    // Enhanced fallback data with more realistic matches
-    const fallbackMatches = [
+
+
+    // Use API data only - no fallback matches
+    console.log('Fetching matches from API...');
+    
+    // Try multiple API endpoints to get live cricket data
+    const apiEndpoints = [
       {
-        matchInfo: {
-          matchId: '1',
-          team1: { teamCode: 'IND', flagCode: 'ind' },
-          team2: { teamCode: 'AUS', flagCode: 'aus' },
-          team1Score: '185/5 (20)',
-          team2Score: '174/9 (19.3)',
-          status: 'Completed',
-          result: 'India won by 11 runs',
-          matchType: 'T20I',
-          venue: 'Mumbai',
-          overs: '19.3'
-        }
+        url: 'https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent',
+        host: 'cricbuzz-cricket.p.rapidapi.com'
       },
       {
-        matchInfo: {
-          matchId: '2',
-          team1: { teamCode: 'ENG', flagCode: 'eng' },
-          team2: { teamCode: 'SA', flagCode: 'sa' },
-          team1Score: '245/8 (50)',
-          team2Score: '198/10 (45.2)',
-          status: 'Completed',
-          result: 'England won by 47 runs',
-          matchType: 'ODI',
-          venue: 'London',
-          overs: '45.2'
-        }
+        url: 'https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live',
+        host: 'cricbuzz-cricket.p.rapidapi.com'
       },
       {
-        matchInfo: {
-          matchId: '3',
-          team1: { teamCode: 'PAK', flagCode: 'pak' },
-          team2: { teamCode: 'NZ', flagCode: 'nz' },
-          team1Score: '156/4 (18.2)',
-          team2Score: '155/8 (20)',
-          status: 'Live',
-          result: 'Pakistan needs 0 runs from 10 balls',
-          matchType: 'T20I',
-          venue: 'Karachi',
-          overs: '18.2'
-        }
-      },
-      {
-        matchInfo: {
-          matchId: '4',
-          team1: { teamCode: 'WI', flagCode: 'wi' },
-          team2: { teamCode: 'AUS', flagCode: 'aus' },
-          team1Score: '214/4 (19.6)',
-          team2Score: '215/4 (16.1)',
-          status: 'Completed',
-          result: 'Australia won by 6 wkts',
-          matchType: 'T20I',
-          venue: 'Bridgetown',
-          overs: '16.1'
-        }
-      },
-      {
-        matchInfo: {
-          matchId: '5',
-          team1: { teamCode: 'BAN', flagCode: 'ban' },
-          team2: { teamCode: 'SL', flagCode: 'sl' },
-          team1Score: '189/8 (19.6)',
-          team2Score: '190/7 (18.5)',
-          status: 'Completed',
-          result: 'Sri Lanka won by 3 wkts',
-          matchType: 'T20I',
-          venue: 'Dhaka',
-          overs: '18.5'
-        }
+        url: 'https://cricket-live-data.p.rapidapi.com/matches',
+        host: 'cricket-live-data.p.rapidapi.com'
       }
     ];
 
-    // For now, use fallback data since APIs are unreliable
-    // You can uncomment the API call below if you get valid API keys
-    console.log('Using fallback data for matches');
-    setMatches(fallbackMatches);
-    setLoading(false);
-    
-    /* Uncomment this section when you have valid API keys
-    axios.get('https://cricbuzz-cricket.p.rapidapi.com/matches/v1/recent', {
-      headers: {
-        'X-RapidAPI-Key': API_KEY,
-        'X-RapidAPI-Host': API_HOST
-      },
-      timeout: 5000
-    })
-    .then(res => {
-      console.log('API response:', res.data);
-      const matches = [];
-      (res.data.typeMatches || []).forEach(typeMatch => {
-        (typeMatch.seriesMatches || []).forEach(series => {
-          if (series.seriesAdWrapper && series.seriesAdWrapper.matches) {
-            series.seriesAdWrapper.matches.forEach(match => {
-              matches.push({
-                matchInfo: {
-                  matchId: match.matchInfo.matchId,
-                  team1: {
-                    teamCode: match.matchInfo.team1?.teamSName,
-                    flagCode: match.matchInfo.team1?.imageId || ''
-                  },
-                  team2: {
-                    teamCode: match.matchInfo.team2?.teamSName,
-                    flagCode: match.matchInfo.team2?.imageId || ''
-                  },
-                  team1Score: match.matchScore?.team1Score?.inngs1?.runs
-                    ? `${match.matchScore.team1Score.inngs1.runs}/${match.matchScore.team1Score.inngs1.wickets} (${match.matchScore.team1Score.inngs1.overs})`
-                    : '',
-                  team2Score: match.matchScore?.team2Score?.inngs1?.runs
-                    ? `${match.matchScore.team2Score.inngs1.runs}/${match.matchScore.team2Score.inngs1.wickets} (${match.matchScore.team2Score.inngs1.overs})`
-                    : '',
-                  status: match.matchInfo.status,
-                  result: match.matchInfo.status,
-                  matchType: match.matchInfo.matchFormat,
-                  venue: match.matchInfo.venueInfo?.ground,
-                  overs: match.matchScore?.team1Score?.inngs1?.overs || match.matchScore.team2Score?.inngs1?.overs || '',
+    const tryApiEndpoint = async (endpoint) => {
+      try {
+        const response = await axios.get(endpoint.url, {
+          headers: {
+            'X-RapidAPI-Key': API_KEY,
+            'X-RapidAPI-Host': endpoint.host
+          },
+          timeout: 10000
+        });
+        return response.data;
+      } catch (error) {
+        console.log(`API endpoint ${endpoint.url} failed:`, error.message);
+        return null;
+      }
+    };
+
+    // Try each endpoint until one works
+    const fetchData = async () => {
+      for (const endpoint of apiEndpoints) {
+        const data = await tryApiEndpoint(endpoint);
+        if (data) {
+          console.log('Successfully fetched data from:', endpoint.url);
+          console.log('API response:', data);
+          
+          // Parse the data based on the endpoint
+          let matches = [];
+          
+          if (endpoint.url.includes('cricbuzz')) {
+            // Cricbuzz API format
+            (data.typeMatches || []).forEach(typeMatch => {
+              (typeMatch.seriesMatches || []).forEach(series => {
+                if (series.seriesAdWrapper && series.seriesAdWrapper.matches) {
+                  series.seriesAdWrapper.matches.forEach(match => {
+                    matches.push({
+                      matchInfo: {
+                        matchId: match.matchInfo.matchId,
+                        team1: {
+                          teamCode: match.matchInfo.team1?.teamSName || match.matchInfo.team1?.name,
+                          flagCode: match.matchInfo.team1?.imageId || ''
+                        },
+                        team2: {
+                          teamCode: match.matchInfo.team2?.teamSName || match.matchInfo.team2?.name,
+                          flagCode: match.matchInfo.team2?.imageId || ''
+                        },
+                        team1Score: match.matchScore?.team1Score?.inngs1?.runs
+                          ? `${match.matchScore.team1Score.inngs1.runs}/${match.matchScore.team1Score.inngs1.wickets} (${match.matchScore.team1Score.inngs1.overs})`
+                          : '',
+                        team2Score: match.matchScore?.team2Score?.inngs1?.runs
+                          ? `${match.matchScore.team2Score.inngs1.runs}/${match.matchScore.team2Score.inngs1.wickets} (${match.matchScore.team2Score.inngs1.overs})`
+                          : '',
+                        status: match.matchInfo.status,
+                        result: match.matchInfo.status,
+                        matchType: match.matchInfo.matchFormat,
+                        venue: match.matchInfo.venueInfo?.ground,
+                        overs: match.matchScore?.team1Score?.inngs1?.overs || match.matchScore?.team2Score?.inngs1?.overs || '',
+                      }
+                    });
+                  });
                 }
               });
             });
+          } else {
+            // Generic API format
+            matches = (data.matches || data.data || []).map(match => ({
+              matchInfo: {
+                matchId: match.id || match.matchId,
+                team1: {
+                  teamCode: match.team1?.shortName || match.team1?.name,
+                  flagCode: ''
+                },
+                team2: {
+                  teamCode: match.team2?.shortName || match.team2?.name,
+                  flagCode: ''
+                },
+                team1Score: match.team1Score || '',
+                team2Score: match.team2Score || '',
+                status: match.status || 'Live',
+                result: match.result || match.status,
+                matchType: match.format || 'T20I',
+                venue: match.venue || '',
+                overs: match.overs || '',
+              }
+            }));
           }
-        });
-      });
+          
+          if (matches.length > 0) {
+            setMatches(matches);
+            setLoading(false);
+            return;
+          }
+        }
+      }
       
-      setMatches(matches.length > 0 ? matches : fallbackMatches);
+      // If no API worked, show error
+      console.log('All API endpoints failed');
+      setError('Unable to fetch live matches. Please try again later.');
+      setMatches([]);
       setLoading(false);
-    })
-    .catch(err => {
-      console.log('API failed, using fallback data:', err.message);
-      setMatches(fallbackMatches);
-      setLoading(false);
-    });
-    */
+    };
+
+    fetchData();
   }, []);
 
   let filteredMatches = matches;
